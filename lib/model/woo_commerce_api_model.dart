@@ -40,12 +40,41 @@ class WooCommerceAPI {
   Future<List<dynamic>> getProductsByCategory(String categoryId) async {
     // Fetch products by category ID
     final response = await http.get(Uri.parse(
-        'https://your-woocommerce-site.com/wp-json/wc/v3/products?category=$categoryId&consumer_key=your_key&consumer_secret=your_secret'));
+        '$baseUrl/wp-json/wc/v3/products?category=$categoryId&consumer_key=your_key&consumer_secret=your_secret'));
 
     if (response.statusCode == 200) {
       return json.decode(response.body);
     } else {
       throw Exception('Failed to load products');
+    }
+  }
+
+  //add orders
+  Future<Map<String, dynamic>> createOrder(
+      List<Map<String, dynamic>> cartItems) async {
+    final String url =
+        '$baseUrl/wp-json/wc/v3/orders?consumer_key=$consumerKey&consumer_secret=$consumerSecret';
+
+    final orderData = {
+      'line_items': cartItems.map((item) {
+        return {'product_id': item['id'], 'quantity': item['quantity']};
+      }).toList(),
+
+      // You can add other fields like "customer_id", "billing", and "shipping" details if needed
+    };
+
+    final response = await http.post(
+      Uri.parse(url),
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: json.encode(orderData),
+    );
+
+    if (response.statusCode == 201) {
+      return json.decode(response.body);
+    } else {
+      throw Exception('Failed to create order: ${response.body}');
     }
   }
 }

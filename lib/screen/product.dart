@@ -1,17 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:woo_commerce_test/provider/cart_provider.dart';
 import 'package:woo_commerce_test/provider/categories_provider.dart';
 import 'package:woo_commerce_test/provider/product_provider.dart';
+import 'package:woo_commerce_test/screen/cart_screen.dart';
 
 class ProductTest extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final categoriesAsyncValue = ref.watch(categoryProvider);
-    final productsAsyncValue = ref.watch(productProvider as ProviderListenable);
+    final productsAsyncValue = ref.watch(productProvider);
 
     return Scaffold(
       appBar: AppBar(
         title: Text("Product"),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                    MaterialPageRoute(builder: (context) => CartScreen()));
+              },
+              icon: Icon(Icons.shopping_cart))
+        ],
       ),
       body: Column(
         children: [
@@ -96,6 +106,11 @@ class ProductTest extends ConsumerWidget {
                           : Icon(Icons.image_not_supported),
                       title: Text(product['name']),
                       subtitle: Text("\$${product['price']}"),
+                      trailing: IconButton(
+                          onPressed: () {
+                            ref.read(cartProvider.notifier).addProduct(product);
+                          },
+                          icon: Icon(Icons.add_shopping_cart)),
                     );
                   },
                 );
