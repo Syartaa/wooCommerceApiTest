@@ -74,10 +74,6 @@ class Signup extends ConsumerWidget {
                       Text(authState.error!,
                           style: TextStyle(color: Colors.red)),
                     ],
-                    if (authState.user != null) ...[
-                      SizedBox(height: 8),
-                      Text('Welcome, ${authState.user!['user_display_name']}'),
-                    ],
                     TextButton(
                         onPressed: () {
                           Navigator.of(context).push(

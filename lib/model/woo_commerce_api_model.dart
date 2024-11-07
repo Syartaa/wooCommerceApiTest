@@ -50,17 +50,19 @@ class WooCommerceAPI {
   }
 
   //add orders
-  Future<Map<String, dynamic>> createOrder(
-      List<Map<String, dynamic>> cartItems) async {
+  Future<Map<String, dynamic>> createOrder(List<Map<String, dynamic>> cartItems,
+      Map<String, dynamic> userDetails) async {
     final String url =
         '$baseUrl/wp-json/wc/v3/orders?consumer_key=$consumerKey&consumer_secret=$consumerSecret';
 
+    // Prepare order data with both line_items and user details
     final orderData = {
       'line_items': cartItems.map((item) {
         return {'product_id': item['id'], 'quantity': item['quantity']};
       }).toList(),
-
-      // You can add other fields like "customer_id", "billing", and "shipping" details if needed
+      'customer_id': userDetails['customer_id'], // Add customer_id
+      'billing': userDetails['billing'], // Add billing details
+      'shipping': userDetails['shipping'], // Add shipping details
     };
 
     final response = await http.post(
